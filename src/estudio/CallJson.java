@@ -30,16 +30,16 @@ public class CallJson implements Serializable {
 	public static void main(String[] args) throws IOException, JSONException, ParseException {
 
 		System.out.println(valiteDate());     
-		if (valiteDate()==0) {
-			System.out.println("Drop Collections "+ dropCollection());
-			JSONObject json = readJsonFromUrl("https://api.telogis.com/rest/login/vialimpia/vsalinas/vsalinas");
+		if (valiteDate()==0) { // compara la fecha si la fecha del servidor es igual ala feha de la base de datos Inicia al Proceso
+			System.out.println("Drop Collections "+ dropCollection()); // borra la colletions user para incluir los datos nuevos desde la api
+			JSONObject json = readJsonFromUrl("https://api.telogis.com/rest/login/vialimpia/vsalinas/vsalinas"); // leer el api y lo coloca en el objeto JSONObject 
 			System.out.println(json.toString());
 			System.out.println(json.get("userId"));
-			System.out.println(" importacion Json " + importJson(json));	
-			System.out.println("Respuesta de la modificacion fecha "+ updateDate());
+			System.out.println(" importacion Json " + importJson(json));// 	importa el objeto json ala base de datos de mongoDB colletions user.
+			System.out.println("Respuesta de la modificacion fecha "+ updateDate()); // actualiza la fecha sumandole 1  dia para que el proceso se haga cada dia. 
 		}else {
 
-			System.out.println(" id Job "+ searhId("vsalinas"));
+			System.out.println(" id Job "+ searhId("vsalinas"));// obtiene el JobId 
 		}
 		
 		
@@ -68,6 +68,9 @@ public class CallJson implements Serializable {
 		}
 	}
 
+	/*
+	 * Importa desde la api ala base de datos MongoDB
+	 */
 	public  static String importJson(JSONObject json) {
 
 		String mensaje="";  
@@ -88,7 +91,9 @@ public class CallJson implements Serializable {
 		return mensaje;			  
 	}
 
-
+    /*
+     * Compara la fechas para ejecutar el proceso de importacion de la api ala base datos MongoDB 
+     */
 	public static int valiteDate() throws ParseException {
 
 		Date dateDb = null;
@@ -101,8 +106,6 @@ public class CallJson implements Serializable {
 		while (cursor.hasNext()) {
 			dateDb =(Date)cursor.next().get("date");
 		}
-
-
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date2 = dateFormat.parse(dateFormat.format(dateDb));
 		Date date = dateFormat.parse(dateFormat.format(new Date()));
@@ -111,7 +114,9 @@ public class CallJson implements Serializable {
 		return date.compareTo(date2) ;  // sin son iguales es cero distinta 1
 	}
 
-
+   /*
+    * Obtiene la conexion de MongoDB
+    */
 	public static Mongo getConexionMongoDB() {
 		Mongo mongo = null;
 		try {
@@ -123,6 +128,9 @@ public class CallJson implements Serializable {
 		return mongo;
 	}
 
+	/*
+	 * inserta la fecha en la base de datos MongoDb
+	 */
 	public static String insertDate() {
 		String response ="";
 		try {
@@ -153,6 +161,9 @@ public class CallJson implements Serializable {
 		return new Date(cal.getTimeInMillis());
 	}
 
+	/*
+	 * Busca el userId pasando como  el userName parametro en MongoDB
+	 */
 
 	public static String searhId(String user) {
 
@@ -174,7 +185,11 @@ public class CallJson implements Serializable {
 
 		return response;
 	}
-
+ 
+	/*
+	 * Modifica la fecha colocandole un dia mas para hacer la validacion para que el pro
+	 * ceso se ejecute a  diario 
+	 */
 
 	public static String updateDate() {
 		String response ="";
@@ -200,6 +215,10 @@ public class CallJson implements Serializable {
 	}
 	
 	
+	
+	/*
+	 * Borra la informacion en la colletions user para inicializar el proceso.
+	 */
 	public static String dropCollection() {
 		String response ="";
 		try {

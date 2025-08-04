@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+
 public class StreamApiExample {
 	
 	  public static void main(String[] args) {
@@ -14,10 +16,12 @@ public class StreamApiExample {
 	            new Producto("Monitor", 300.00, "Electronica")
 	        );
 
-	        List<String> nombresProductosCaros = productos.stream() // 1. Obtener el stream de la lista
+	        List<Producto> nombresProductosCaros = productos.stream() // 1. Obtener el stream de la lista
 	            .filter(producto -> producto.getPrecio() < 50.00) // 2. Operación intermedia: filtrar
-	            .map(Producto::getNombre) // 3. Operación intermedia: mapear a nombres
+	            .map(producto -> new Producto(producto.getNombre(), producto.getPrecio(), producto.getCategoria()))
 	            .collect(Collectors.toList()); // 4. Operación terminal: recolectar en una nueva lista
+	        
+	     
 
 	        System.out.println(nombresProductosCaros); // Salida: [Laptop, Monitor]
 	    }
